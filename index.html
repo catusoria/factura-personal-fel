@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impresor FEL Guatemala</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     APP HEADER
+══════════════════════════════ -->
+<header>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b8962e" stroke-width="1.5">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="16" y1="13" x2="8" y2="13"/>
+    <line x1="16" y1="17" x2="8" y2="17"/>
+  </svg>
+  <h1>Impresor FEL <em style="font-weight:300;opacity:.5;font-style:italic">Guatemala</em></h1>
+  <span>SAT · DTE · FEL v0.2</span>
+</header>
+
+<div class="workspace">
+
+  <!-- ══════════════════════════════
+       SIDEBAR DE CONTROLES
+  ══════════════════════════════ -->
+  <aside class="sidebar">
+
+    <!-- XML -->
+    <details class="sb" open>
+      <summary>Archivo XML</summary>
+      <div class="sb-body">
+        <div class="upload-zone" id="dropzone" onclick="document.getElementById('xmlFile').click()">
+          <div style="font-size:22px;margin-bottom:4px">📄</div>
+          <div id="upload-lbl">Arrastra tu XML aquí<br>o haz clic para seleccionar</div>
+          <input type="file" id="xmlFile" accept=".xml">
+        </div>
+      </div>
+    </details>
+
+    <!-- Tamaño de impresión -->
+    <details class="sb" open>
+      <summary>Tamaño de impresión</summary>
+      <div class="sb-body">
+        <div class="btns3">
+          <div class="sb-btn" onclick="setSize('ticket',this)">🧾<br>TICKET<br>80mm</div>
+          <div class="sb-btn on" onclick="setSize('half',this)">½<br>CARTA<br>5.5×8.5"</div>
+          <div class="sb-btn" onclick="setSize('letter',this)">📃<br>CARTA<br>8.5×11"</div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Logo -->
+    <details class="sb">
+      <summary>Logo de empresa</summary>
+      <div class="sb-body">
+        <div class="upload-zone" onclick="document.getElementById('logoFile').click()">
+          <div style="font-size:18px;margin-bottom:2px">🖼</div>
+          Cargar logo (PNG/JPG/SVG)
+          <input type="file" id="logoFile" accept="image/*">
+        </div>
+        <img id="logo-prev" class="logo-prev" src="" alt="Logo">
+        <div class="cg">
+          <label>Posición del logo</label>
+          <div class="btns3">
+            <div class="sb-btn on" onclick="setLogoPos('left',this)">⬅ Izq.</div>
+            <div class="sb-btn" onclick="setLogoPos('center',this)">⬛ Centro</div>
+            <div class="sb-btn" onclick="setLogoPos('right',this)">➡ Der.</div>
+          </div>
+        </div>
+        <div class="cg">
+          <label>Nombre comercial personalizado</label>
+          <input type="text" id="custName" placeholder="Deja vacío para usar del XML">
+        </div>
+      </div>
+    </details>
+
+    <!-- Colores -->
+    <details class="sb">
+      <summary>Colores</summary>
+      <div class="sb-body">
+        <div class="cg">
+          <label>Color de tipografía</label>
+          <div class="color-row">
+            <input type="color" id="cText" value="#111111">
+            <input type="text"  id="cTextHex" value="#111111" maxlength="7">
+          </div>
+        </div>
+        <div class="cg">
+          <label>Color de acento (bordes, encabezados tabla)</label>
+          <div class="color-row">
+            <input type="color" id="cAccent" value="#000000">
+            <input type="text"  id="cAccentHex" value="#000000" maxlength="7">
+          </div>
+        </div>
+        <div class="cg">
+          <label>Fondo de la factura</label>
+          <div class="color-row">
+            <input type="color" id="cBg" value="#ffffff">
+            <input type="text"  id="cBgHex" value="#ffffff" maxlength="7">
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Tipografía -->
+    <details class="sb">
+      <summary>Tipografía</summary>
+      <div class="sb-body">
+        <div class="cg">
+          <label>Fuente</label>
+          <select id="fontSel">
+            <option value="'DM Sans', sans-serif">DM Sans</option>
+            <option value="'Georgia', serif">Georgia</option>
+            <option value="'Arial', sans-serif">Arial</option>
+            <option value="'DM Mono', monospace">DM Mono</option>
+            <option value="'Courier New', monospace">Courier New</option>
+            <option value="'Times New Roman', serif">Times New Roman</option>
+          </select>
+        </div>
+        <div class="cg">
+          <label>Tamaño base</label>
+          <div class="range-row">
+            <input type="range" id="fontSz" min="7" max="13" value="10" step="0.5">
+            <span class="range-val" id="fontSzVal">10pt</span>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Campos visibles -->
+    <details class="sb">
+      <summary>Campos visibles</summary>
+      <div class="sb-body">
+        <div class="tog-row">
+          <span>Fecha de emisión</span>
+          <label class="tog"><input type="checkbox" id="tFecha" checked onchange="togId('ih-fecha-row',this)"><span class="tog-sl"></span></label>
+        </div>
+        <div class="tog-row">
+          <span>Dirección emisor</span>
+          <label class="tog"><input type="checkbox" id="tDirEm" checked onchange="togId('inv-dir-emisor',this)"><span class="tog-sl"></span></label>
+        </div>
+        <div class="tog-row">
+          <span>Correo emisor</span>
+          <label class="tog"><input type="checkbox" id="tCorreo" checked onchange="togId('inv-correo-emisor',this)"><span class="tog-sl"></span></label>
+        </div>
+        <div class="tog-row">
+          <span>Bloque receptor</span>
+          <label class="tog"><input type="checkbox" id="tReceptor" checked onchange="togId('ih-receptor',this)"><span class="tog-sl"></span></label>
+        </div>
+        <div class="tog-row">
+          <span>Número de autorización</span>
+          <label class="tog"><input type="checkbox" id="tAuth" checked onchange="togId('inv-auth-line',this)"><span class="tog-sl"></span></label>
+        </div>
+        <div class="tog-row">
+          <span>Certificador (SAT)</span>
+          <label class="tog"><input type="checkbox" id="tCert" checked onchange="togId('inv-cert-line',this)"><span class="tog-sl"></span></label>
+        </div>
+        <div class="tog-row">
+          <span>P. Unitario (columna)</span>
+          <label class="tog"><input type="checkbox" id="tPU" checked onchange="togCols('col-pu',this)"><span class="tog-sl"></span></label>
+        </div>
+        <div class="tog-row">
+          <span>Descuento (columna)</span>
+          <label class="tog"><input type="checkbox" id="tDesc" onchange="togCols('col-desc',this)"><span class="tog-sl"></span></label>
+        </div>
+        <div class="tog-row">
+          <span>QR en pie</span>
+          <label class="tog"><input type="checkbox" id="tQr" checked onchange="togId('inv-qr-area',this)"><span class="tog-sl"></span></label>
+        </div>
+      </div>
+    </details>
+
+    <!-- Notas -->
+    <details class="sb">
+      <summary>Notas adicionales</summary>
+      <div class="sb-body">
+        <div class="cg">
+          <label>Texto de pie de página</label>
+          <textarea id="notasExtra" placeholder="Ej: Gracias por su preferencia..."></textarea>
+        </div>
+      </div>
+    </details>
+
+    <button class="btn-print" onclick="window.print()">🖨&nbsp; IMPRIMIR / PDF</button>
+
+  </aside><!-- /sidebar -->
+
+
+  <!-- ══════════════════════════════
+       ÁREA DE VISTA PREVIA
+  ══════════════════════════════ -->
+  <main class="preview-area">
+    <div class="prev-label">Vista previa</div>
+
+    <div id="inv-wrap" class="pw-half">
+
+      <!-- Estado vacío -->
+      <div id="empty-state" class="empty-state">
+        <div class="big">📄</div>
+        <h2>Sin documento</h2>
+        <p>Carga un archivo XML FEL de la SAT<br>para ver la vista previa.</p>
+      </div>
+
+      <!-- Factura -->
+      <div id="invoice" style="display:none">
+
+        <!-- Encabezado: logo + empresa + badge -->
+        <div class="ih-top lp-left" id="ih-top">
+          <div class="ih-logo" id="ih-logo">
+            <img id="inv-logo-img" src="" alt="Logo" style="display:none">
+          </div>
+          <div class="ih-company" id="ih-company">
+            <div class="ih-company-name" id="inv-company-name">—</div>
+            <div class="ih-company-sub">
+              <span id="inv-company-legal">—</span><br>
+              <span id="inv-nit-emisor">—</span>&nbsp;
+              <span id="inv-correo-emisor"></span><br>
+              <span id="inv-dir-emisor"></span>
+            </div>
+          </div>
+          <div class="ih-badge" id="ih-badge">
+            <div class="ih-badge-type" id="inv-doc-type">FACTURA</div>
+            <div class="ih-badge-num"  id="inv-doc-num">—</div>
+          </div>
+        </div>
+
+        <!-- Fecha -->
+        <div class="ih-fecha-row" id="ih-fecha-row">
+          <span><b>FECHA:</b>&nbsp;<span id="inv-fecha-val">—</span></span>
+        </div>
+
+        <!-- Divisor -->
+        <div class="ih-divider"></div>
+
+        <!-- Receptor -->
+        <div class="ih-receptor" id="ih-receptor">
+          <div class="ih-receptor-row">
+            <span class="lbl">NOMBRE:</span>
+            <span class="val" id="inv-nombre-receptor">—</span>
+            &nbsp;&nbsp;
+            <span class="lbl">NIT:</span>
+            <span class="val" id="inv-nit-receptor">—</span>
+          </div>
+          <div class="ih-receptor-row">
+            <span class="lbl">DIRECCIÓN:</span>
+            <span class="val" id="inv-dir-receptor">—</span>
+          </div>
+        </div>
+
+        <!-- Tabla de ítems -->
+        <div class="inv-table-wrap">
+          <table class="inv-t">
+            <thead>
+              <tr>
+                <th class="tcenter" style="width:52px">CANTIDAD</th>
+                <th class="tleft">DESCRIPCIÓN</th>
+                <th class="tright col-pu"   style="width:70px">P. UNITARIO</th>
+                <th class="tright col-desc" style="width:62px">DESCUENTO</th>
+                <th class="tright"          style="width:70px">TOTAL</th>
+              </tr>
+            </thead>
+            <tbody id="inv-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Fila de totales -->
+        <div class="inv-totals-row">
+          <div class="inv-total-label" id="inv-total-letras">—</div>
+          <div class="inv-total-val">
+            <span class="lbl">TOTAL</span>
+            <span class="val" id="inv-gran-total">Q 0.00</span>
+          </div>
+        </div>
+
+        <!-- Notas adicionales -->
+        <div class="inv-notes inv-hidden" id="inv-notes"></div>
+
+        <!-- Footer: QR + certificación -->
+        <div class="inv-footer">
+          <div class="qr-area" id="inv-qr-area">
+            <div class="qr-ph" id="inv-qr-ph">QR<br>cert.</div>
+            <img id="inv-qr-img" src="" alt="QR" style="display:none;width:64px;height:64px;">
+          </div>
+          <div class="cert-text">
+            <span id="inv-phrase-cert"></span><br>
+            <b id="inv-auth-line">Autorización: —</b><br>
+            <span id="inv-cert-line">—</span>
+          </div>
+        </div>
+
+      </div><!-- /invoice -->
+    </div><!-- /inv-wrap -->
+  </main>
+
+</div><!-- /workspace -->
+
+<script src="app.js"></script>
+</body>
+</html>

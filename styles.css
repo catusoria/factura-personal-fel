@@ -1,0 +1,476 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,700;1,300&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ══════════════════════════
+   VARIABLES GLOBALES
+══════════════════════════ */
+:root {
+  --bg: #f0ede8;
+  --panel: #181816;
+  --accent: #b8962e;
+  --muted: #7a7a72;
+  --radius: 5px;
+  /* Factura — personalizables en runtime */
+  --inv-text: #111111;
+  --inv-accent: #000000;
+  --inv-bg: #ffffff;
+  --inv-font: 'DM Sans', sans-serif;
+  --inv-font-size: 10pt;
+}
+
+/* ══════════════════════════
+   BASE
+══════════════════════════ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  color: #1a1a18;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ══════════════════════════
+   APP HEADER
+══════════════════════════ */
+header {
+  background: var(--panel);
+  color: #f0ede8;
+  padding: 12px 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid var(--accent);
+  flex-shrink: 0;
+}
+header h1 { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 300; }
+header span { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); margin-left: auto; }
+
+/* ══════════════════════════
+   WORKSPACE
+══════════════════════════ */
+.workspace {
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ══════════════════════════
+   SIDEBAR
+══════════════════════════ */
+.sidebar {
+  background: var(--panel);
+  color: #e0dcd4;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #2a2a26;
+}
+
+details.sb { border-bottom: 1px solid #252521; }
+
+details.sb summary {
+  list-style: none;
+  padding: 11px 16px;
+  font-size: 9px;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--accent);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  user-select: none;
+}
+details.sb summary::after { content: '▸'; }
+details.sb[open] summary::after { content: '▾'; }
+details.sb summary::-webkit-details-marker { display: none; }
+
+.sb-body {
+  padding: 4px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Grupos de control ── */
+.cg { display: flex; flex-direction: column; gap: 4px; }
+.cg label { font-size: 9px; color: var(--muted); letter-spacing: .4px; }
+
+/* ── Inputs ── */
+input[type=text],
+select,
+textarea {
+  background: #282824;
+  border: 1px solid #38382e;
+  border-radius: var(--radius);
+  color: #e0dcd4;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-family: inherit;
+  width: 100%;
+  outline: none;
+  transition: border .15s;
+}
+input[type=text]:focus,
+select:focus,
+textarea:focus { border-color: var(--accent); }
+
+input[type=color] {
+  height: 30px;
+  padding: 2px 3px;
+  cursor: pointer;
+  background: #282824;
+  border: 1px solid #38382e;
+  border-radius: var(--radius);
+  width: 100%;
+}
+textarea { resize: vertical; min-height: 56px; }
+
+/* ── Color row ── */
+.color-row { display: flex; gap: 6px; }
+.color-row input[type=color] { width: 38px; flex-shrink: 0; }
+.color-row input[type=text]  { flex: 1; font-family: 'DM Mono', monospace; font-size: 10px; }
+
+/* ── Toggle switch ── */
+.tog-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #c0bcb4;
+  padding: 1px 0;
+}
+.tog { position: relative; display: inline-block; width: 34px; height: 18px; }
+.tog input { opacity: 0; width: 0; height: 0; }
+.tog-sl {
+  position: absolute; inset: 0;
+  background: #38382e;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: .2s;
+}
+.tog-sl::before {
+  content: '';
+  position: absolute;
+  height: 12px; width: 12px;
+  left: 3px; bottom: 3px;
+  background: #666;
+  border-radius: 50%;
+  transition: .2s;
+}
+.tog input:checked + .tog-sl { background: #7aaa65; }
+.tog input:checked + .tog-sl::before { transform: translateX(16px); background: #fff; }
+
+/* ── Botones de 3 opciones ── */
+.btns3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+.sb-btn {
+  background: #282824;
+  border: 1px solid #38382e;
+  border-radius: var(--radius);
+  color: #b0aca4;
+  font-size: 10px;
+  padding: 6px 3px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: 'DM Mono', monospace;
+  line-height: 1.4;
+}
+.sb-btn.on { background: var(--accent); border-color: var(--accent); color: #111; font-weight: 600; }
+.sb-btn:hover:not(.on) { border-color: var(--accent); color: var(--accent); }
+
+/* ── Upload zone ── */
+.upload-zone {
+  border: 2px dashed #38382e;
+  border-radius: var(--radius);
+  padding: 16px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: border .2s, background .2s;
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.upload-zone:hover { border-color: var(--accent); background: #1e1e1a; }
+.upload-zone input { display: none; }
+
+.logo-prev {
+  display: none;
+  max-height: 52px;
+  max-width: 100%;
+  margin-top: 6px;
+  object-fit: contain;
+  border-radius: 3px;
+}
+
+/* ── Range slider ── */
+.range-row { display: flex; align-items: center; gap: 8px; }
+.range-row input[type=range] { flex: 1; accent-color: var(--accent); }
+.range-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  min-width: 30px;
+  text-align: right;
+}
+
+/* ── Botón imprimir ── */
+.btn-print {
+  margin: 10px 14px 16px;
+  background: var(--accent);
+  color: #111;
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px;
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: opacity .15s;
+}
+.btn-print:hover { opacity: .85; }
+
+/* ══════════════════════════
+   ÁREA DE VISTA PREVIA
+══════════════════════════ */
+.preview-area {
+  background: #d8d4cc;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px;
+}
+.prev-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #888;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+/* ══════════════════════════
+   PAPEL (tamaños)
+══════════════════════════ */
+#inv-wrap {
+  background: var(--inv-bg);
+  box-shadow: 0 3px 28px rgba(0,0,0,.18);
+}
+.pw-ticket { width: 80mm; }
+.pw-half   { width: 139.7mm; }
+.pw-letter { width: 215.9mm; }
+
+/* ══════════════════════════
+   FACTURA — LAYOUT GENERAL
+══════════════════════════ */
+#invoice {
+  font-family: var(--inv-font);
+  font-size: var(--inv-font-size);
+  color: var(--inv-text);
+  background: var(--inv-bg);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* ── Encabezado superior ── */
+.ih-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px 18px 6px;
+}
+.ih-top.lp-left   { flex-direction: row; }
+.ih-top.lp-right  { flex-direction: row-reverse; }
+.ih-top.lp-center { flex-direction: column; align-items: center; text-align: center; }
+
+.ih-logo { flex-shrink: 0; }
+.ih-logo img { max-height: 68px; max-width: 140px; object-fit: contain; display: block; }
+
+.ih-company { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.ih-company.centered { align-items: center; text-align: center; }
+
+.ih-company-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--inv-text);
+  line-height: 1.1;
+  margin-bottom: 5px;
+  letter-spacing: .2px;
+}
+.ih-company-sub { font-size: 8.5px; color: #555; line-height: 1.8; }
+
+.ih-badge {
+  flex-shrink: 0;
+  border: 1px solid var(--inv-text);
+  border-radius: 2px;
+  padding: 6px 10px;
+  text-align: center;
+  min-width: 105px;
+  align-self: flex-start;
+}
+.ih-badge-type { font-size: 8.5px; font-weight: 700; color: var(--inv-text); line-height: 1.5; }
+.ih-badge-num  { font-size: 8px; color: #555; margin-top: 1px; line-height: 1.6; white-space: pre-line; }
+
+/* ── Fecha ── */
+.ih-fecha-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 3px 18px 5px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--inv-text);
+}
+
+/* ── Divisores ── */
+.ih-divider       { height: 1.5px; background: var(--inv-text); margin: 0 18px; }
+.ih-divider-light { height: 1px;   background: #ccc;            margin: 0 18px; }
+
+/* ── Receptor ── */
+.ih-receptor {
+  border: 1px solid #999;
+  margin: 10px 18px;
+  padding: 6px 10px;
+  font-size: 9px;
+  line-height: 1.9;
+}
+.ih-receptor-row { display: flex; gap: 5px; flex-wrap: wrap; }
+.ih-receptor-row .lbl { font-weight: 700; color: var(--inv-text); white-space: nowrap; }
+.ih-receptor-row .val { color: #333; }
+
+/* ── Tabla de ítems ── */
+.inv-table-wrap { margin: 8px 18px 0; }
+
+table.inv-t { width: 100%; border-collapse: collapse; font-size: 9px; }
+
+table.inv-t thead tr {
+  border-top: 1.5px solid var(--inv-text);
+  border-bottom: 1.5px solid var(--inv-text);
+}
+table.inv-t thead th {
+  padding: 5px;
+  font-weight: 700;
+  font-size: 8.5px;
+  letter-spacing: .5px;
+  text-align: center;
+  color: var(--inv-text);
+}
+table.inv-t thead th.tleft  { text-align: left; }
+table.inv-t thead th.tright { text-align: right; }
+
+table.inv-t tbody td {
+  padding: 5px;
+  vertical-align: top;
+  border-bottom: 1px solid #e8e5e0;
+  line-height: 1.4;
+  font-size: 9px;
+}
+table.inv-t tbody td.tcenter { text-align: center; }
+table.inv-t tbody td.tright  { text-align: right; white-space: nowrap; }
+
+/* ── Fila de totales ── */
+.inv-totals-row {
+  display: flex;
+  align-items: stretch;
+  border-top: 1.5px solid var(--inv-text);
+  border-bottom: 1.5px solid var(--inv-text);
+  margin: 0 18px;
+}
+.inv-total-label {
+  flex: 1;
+  padding: 5px 6px;
+  font-size: 9px;
+  font-style: italic;
+  color: #444;
+  display: flex;
+  align-items: center;
+}
+.inv-total-val {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 5px 8px;
+  border-left: 1.5px solid var(--inv-text);
+}
+.inv-total-val .lbl { font-weight: 700; font-size: 9px;  color: var(--inv-text); }
+.inv-total-val .val { font-weight: 700; font-size: 13px; color: var(--inv-text); }
+
+/* ── Footer (QR + certificación) ── */
+.inv-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 10px 18px 14px;
+}
+.qr-area { flex-shrink: 0; }
+.qr-area img { width: 64px; height: 64px; display: block; }
+.qr-ph {
+  width: 64px; height: 64px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: #aaa;
+  text-align: center;
+  line-height: 1.4;
+}
+.cert-text { font-size: 8px; color: #444; line-height: 1.8; flex: 1; }
+.cert-text b { color: var(--inv-text); }
+
+/* ── Notas ── */
+.inv-notes {
+  margin: 6px 18px 0;
+  font-size: 8.5px;
+  color: #666;
+  border-top: 1px dashed #ccc;
+  padding-top: 5px;
+  white-space: pre-wrap;
+}
+
+/* ── Estado vacío ── */
+.empty-state { padding: 48px 24px; text-align: center; color: #888; }
+.empty-state .big { font-size: 44px; margin-bottom: 10px; }
+.empty-state h2 { font-family: 'Fraunces', serif; font-weight: 300; font-size: 18px; margin-bottom: 6px; }
+.empty-state p { font-size: 11px; }
+
+/* ── Clases utilitarias de visibilidad ── */
+.inv-hidden { display: none !important; }
+.col-hidden { display: none !important; }
+
+/* ══════════════════════════
+   OVERRIDES TICKET (80mm)
+══════════════════════════ */
+.pw-ticket .ih-top           { padding: 10px 10px 4px; }
+.pw-ticket .ih-company-name  { font-size: 14px; }
+.pw-ticket .ih-badge         { min-width: 75px; }
+.pw-ticket .ih-divider,
+.pw-ticket .ih-receptor,
+.pw-ticket .inv-table-wrap,
+.pw-ticket .inv-totals-row,
+.pw-ticket .inv-footer,
+.pw-ticket .inv-notes        { margin-left: 8px; margin-right: 8px; }
+.pw-ticket .ih-fecha-row     { padding-right: 10px; }
+
+/* ══════════════════════════
+   IMPRESIÓN / PDF
+══════════════════════════ */
+@media print {
+  body { background: #fff; }
+  header,
+  .sidebar,
+  .prev-label      { display: none !important; }
+  .workspace       { display: block; }
+  .preview-area    { padding: 0; background: #fff; display: block; }
+  #inv-wrap        { box-shadow: none !important; width: 100% !important; }
+}
