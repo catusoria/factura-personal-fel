@@ -415,6 +415,6 @@ body { display:flex; }
   .empty-state{display:none!important;}
   @page{size:letter portrait;margin:0;}
   .invoice.size-ticket{width:302px!important;min-height:unset!important;}
-  .invoice.size-media{width:5.5in!important;min-height:8.5in!important;}
+  .invoice.size-media{width:8.5in!important;min-height:5.5in!important;}
   .invoice.size-carta{width:8.5in!important;min-height:11in!important;}
 }
